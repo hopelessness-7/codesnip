@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\DTOs\SearchFilters;
+use App\Models\Folder;
 use App\Livewire\Snippets\Index;
+use App\Models\SmartCollection;
 use App\Models\Snippet;
 use App\Models\Tag;
 use App\Models\User;
@@ -102,5 +104,68 @@ class SnippetSearchTest extends TestCase
             ->assertSet('query', 'api')
             ->assertSet('language', 'php')
             ->assertSet('createdFrom', '2026-01-01');
+    }
+
+    public function test_find_by_user_filters_by_folder_and_smart_collection(): void
+    {
+        $user = User::factory()->create();
+
+        $folderA = Folder::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Backend',
+            'slug' => 'backend',
+            'color' => '#6366f1',
+        ]);
+        $folderB = Folder::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Frontend',
+            'slug' => 'frontend',
+            'color' => '#22c55e',
+        ]);
+
+        $snippetA = Snippet::query()->create([
+            'user_id' => $user->id,
+            'uuid' => (string) Str::uuid(),
+            'title' => 'PHP backend',
+            'code' => '<?php echo 1;',
+            'language' => 'php',
+            'is_public' => false,
+        ]);
+        $snippetB = Snippet::query()->create([
+            'user_id' => $user->id,
+            'uuid' => (string) Str::uuid(),
+            'title' => 'JS frontend',
+            'code' => 'console.log(1);',
+            'language' => 'javascript',
+            'is_public' => false,
+        ]);
+
+        $snippetA->folders()->sync([$folderA->id]);
+        $snippetB->folders()->sync([$folderB->id]);
+
+        $collection = SmartCollection::query()->create([
+            'user_id' => $user->id,
+            'name' => 'Only backend snippet',
+            'filters_json' => ['query' => 'backend'],
+            'is_system' => false,
+        ]);
+        $collection->snippets()->sync([$snippetA->id => ['matched_at' => now()]]);
+
+        /** @var SnippetService $snippetService */
+        $snippetService = app(SnippetService::class);
+
+        $folderFiltered = $snippetService->findByUser($user->id, SearchFilters::fromArray([
+            'folder_ids' => [$folderA->id],
+            'per_page' => 50,
+        ]));
+        $this->assertCount(1, $folderFiltered->items());
+        $this->assertSame($snippetA->id, $folderFiltered->items()[0]->id);
+
+        $smartFiltered = $snippetService->findByUser($user->id, SearchFilters::fromArray([
+            'smart_collection_id' => $collection->id,
+            'per_page' => 50,
+        ]));
+        $this->assertCount(1, $smartFiltered->items());
+        $this->assertSame($snippetA->id, $smartFiltered->items()[0]->id);
     }
 }

@@ -85,6 +85,29 @@
                 <flux:input size="sm" type="date" wire:model.live="updatedFrom" :label="__('snippets.index.updated_from')" />
                 <flux:input size="sm" type="date" wire:model.live="updatedTo" :label="__('snippets.index.updated_to')" />
             </div>
+            <div class="grid gap-2 sm:grid-cols-2">
+                <flux:select size="sm" wire:model.live="smartCollectionId" :label="__('snippets.index.smart_collection')">
+                    <flux:select.option value="">{{ __('snippets.index.smart_collection_all') }}</flux:select.option>
+                    @foreach ($smartCollections as $smartCollection)
+                        <flux:select.option value="{{ $smartCollection->id }}">{{ $smartCollection->name }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+                <div class="grid gap-1">
+                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ __('snippets.index.folders') }}</span>
+                    @if ($folders->isNotEmpty())
+                        <div class="flex max-h-24 flex-wrap gap-1 overflow-y-auto rounded border border-zinc-200 p-1.5 dark:border-zinc-700">
+                            @foreach ($folders as $folder)
+                                <label class="inline-flex items-center gap-1 rounded bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+                                    <input type="checkbox" wire:model.live="folderIds" value="{{ $folder->id }}" class="rounded border-zinc-300">
+                                    <span>{{ $folder->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('snippets.index.folders_empty') }}</span>
+                    @endif
+                </div>
+            </div>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ __('snippets.index.sort_dir') }}:</span>
                 <flux:radio.group wire:model.live="sortDirection" variant="segmented">

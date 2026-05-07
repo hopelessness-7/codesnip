@@ -67,6 +67,22 @@
                     :placeholder="__('snippets.edit.tags_ph')"
                 />
 
+                <div class="grid gap-2">
+                    <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ __('snippets.edit.folders_label') }}</span>
+                    @if ($folders->isEmpty())
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('snippets.edit.folders_empty') }}</p>
+                    @else
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($folders as $folder)
+                                <label class="inline-flex items-center gap-1.5 rounded border border-zinc-200 px-2 py-1 text-xs dark:border-zinc-700">
+                                    <input type="checkbox" wire:model="folderIds" value="{{ $folder->id }}" class="rounded border-zinc-300">
+                                    <span>{{ $folder->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
                 <flux:checkbox wire:model="is_public" :label="__('snippets.edit.public_label')" />
 
                 <div class="flex flex-wrap items-center gap-2">

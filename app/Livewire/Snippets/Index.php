@@ -3,8 +3,10 @@
 namespace App\Livewire\Snippets;
 
 use App\DTOs\SearchFilters;
+use App\Services\FolderService;
 use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Services\SavedSearchService;
+use App\Services\SmartCollectionService;
 use App\Services\SnippetService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -48,6 +50,13 @@ class Index extends Component
 
     #[Url(history: true)]
     public string $updatedTo = '';
+
+    /** @var list<int> */
+    #[Url(history: true)]
+    public array $folderIds = [];
+
+    #[Url(history: true)]
+    public string $smartCollectionId = '';
 
     public int $perPage = 12;
 
@@ -107,6 +116,16 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function updatingFolderIds(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSmartCollectionId(): void
+    {
+        $this->resetPage();
+    }
+
     public function toggleTag(string $slug): void
     {
         if (in_array($slug, $this->selectedTags, true)) {
@@ -135,6 +154,8 @@ class Index extends Component
         $this->createdTo = '';
         $this->updatedFrom = '';
         $this->updatedTo = '';
+        $this->folderIds = [];
+        $this->smartCollectionId = '';
         $this->activeSavedSearchId = null;
         $this->resetPage();
     }
@@ -149,8 +170,13 @@ class Index extends Component
             'created_to' => $this->createdTo = '',
             'updated_from' => $this->updatedFrom = '',
             'updated_to' => $this->updatedTo = '',
+            'smart_collection_id' => $this->smartCollectionId = '',
             default => null,
         };
+
+        if ($filter === 'folder_ids') {
+            $this->folderIds = [];
+        }
 
         $this->resetPage();
     }
@@ -184,6 +210,12 @@ class Index extends Component
         }
         if ($this->updatedTo !== '') {
             $chips[] = ['key' => 'updated_to', 'label' => __('snippets.index.updated_to'), 'value' => $this->updatedTo];
+        }
+        if ($this->smartCollectionId !== '') {
+            $chips[] = ['key' => 'smart_collection_id', 'label' => __('snippets.index.smart_collection'), 'value' => '#'.$this->smartCollectionId];
+        }
+        if ($this->folderIds !== []) {
+            $chips[] = ['key' => 'folder_ids', 'label' => __('snippets.index.folders'), 'value' => implode(', ', $this->folderIds)];
         }
 
         return $chips;
@@ -227,6 +259,8 @@ class Index extends Component
         $this->createdTo = $filters->createdTo ?? '';
         $this->updatedFrom = $filters->updatedFrom ?? '';
         $this->updatedTo = $filters->updatedTo ?? '';
+        $this->folderIds = $filters->folderIds;
+        $this->smartCollectionId = $filters->smartCollectionId !== null ? (string) $filters->smartCollectionId : '';
         $this->visibility = $filters->isPublic === null ? 'all' : ($filters->isPublic ? 'public' : 'private');
         $this->activeSavedSearchId = $savedSearch->id;
         $this->filtersOpen = true;
@@ -259,6 +293,8 @@ class Index extends Component
             'created_to' => $this->createdTo !== '' ? $this->createdTo : null,
             'updated_from' => $this->updatedFrom !== '' ? $this->updatedFrom : null,
             'updated_to' => $this->updatedTo !== '' ? $this->updatedTo : null,
+            'folder_ids' => $this->folderIds,
+            'smart_collection_id' => $this->smartCollectionId !== '' ? (int) $this->smartCollectionId : null,
         ];
 
         if ($this->visibility === 'public') {
@@ -270,13 +306,21 @@ class Index extends Component
         return $payload;
     }
 
-    public function render(SnippetService $snippets, TagRepositoryInterface $tags, SavedSearchService $savedSearchService)
+    public function render(
+        SnippetService $snippets,
+        TagRepositoryInterface $tags,
+        SavedSearchService $savedSearchService,
+        FolderService $folders,
+        SmartCollectionService $smartCollections
+    )
     {
         $filters = SearchFilters::fromArray($this->buildFilterPayload());
 
         return view('livewire.snippets.index', [
             'snippets' => $snippets->findByUser((int) auth()->id(), $filters),
             'tagChips' => $tags->forUserSnippets((int) auth()->id()),
+            'folders' => $folders->listForUser((int) auth()->id()),
+            'smartCollections' => $smartCollections->listForUser((int) auth()->id()),
             'savedSearches' => $savedSearchService->listForUser((int) auth()->id()),
             'activeFilterChips' => $this->activeFilterChips(),
         ]);

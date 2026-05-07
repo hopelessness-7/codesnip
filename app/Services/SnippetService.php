@@ -18,7 +18,8 @@ class SnippetService extends BaseService
 
     public function __construct(
         SnippetRepository $repository,
-        private readonly SnippetRevisionService $snippetRevisionService
+        private readonly SnippetRevisionService $snippetRevisionService,
+        private readonly SmartCollectionService $smartCollectionService
     ) {
         $this->repository = $repository;
     }
@@ -100,12 +101,16 @@ class SnippetService extends BaseService
     {
         /** @var Snippet $model */
         $tags = $this->extractTags($data);
+        $folderIds = $this->extractFolderIds($data);
 
         if ($tags !== []) {
             $this->repository->syncTags($model, $tags);
         } else {
             GenerateTagsJob::dispatch($model);
         }
+
+        $model->folders()->sync($folderIds);
+        $this->smartCollectionService->refreshMembershipForSnippet($model->id);
     }
 
     /**
@@ -135,6 +140,9 @@ class SnippetService extends BaseService
             /** @var Snippet $model */
             $this->repository->syncTags($model, $this->pendingTags);
         }
+        /** @var Snippet $model */
+        $model->folders()->sync($this->extractFolderIds($data));
+        $this->smartCollectionService->refreshMembershipForSnippet($model->id);
 
         $this->pendingTags = [];
         $this->shouldSyncTags = false;
@@ -149,6 +157,20 @@ class SnippetService extends BaseService
         return collect($data['tags'] ?? [])
             ->filter(fn ($t) => $t !== null && $t !== '')
             ->map(fn ($t) => (string) $t)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<int, int>
+     */
+    private function extractFolderIds(array $data): array
+    {
+        return collect($data['folder_ids'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
             ->values()
             ->all();
     }

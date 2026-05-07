@@ -2,9 +2,15 @@
 
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Web\V1\SnippetController;
+use App\Livewire\Folders\Create as FoldersCreate;
+use App\Livewire\Folders\Edit as FoldersEdit;
+use App\Livewire\Folders\Index as FoldersIndex;
 use App\Livewire\Snippets\Create as SnippetsCreate;
 use App\Livewire\Snippets\Edit as SnippetsEdit;
 use App\Livewire\Snippets\Index as SnippetsIndex;
+use App\Livewire\SmartCollections\Create as SmartCollectionsCreate;
+use App\Livewire\SmartCollections\Edit as SmartCollectionsEdit;
+use App\Livewire\SmartCollections\Index as SmartCollectionsIndex;
 use App\Livewire\Tags\Index as TagsIndex;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -38,6 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('snippets', SnippetsIndex::class)->name('snippets.index');
     Route::get('snippets/create', SnippetsCreate::class)->name('snippets.create');
     Route::get('snippets/{snippet}/edit', SnippetsEdit::class)->name('snippets.edit');
+
+    Route::get('folders', FoldersIndex::class)->name('folders.index');
+    Route::get('folders/create', FoldersCreate::class)->name('folders.create');
+    Route::get('folders/{folder}/edit', FoldersEdit::class)->name('folders.edit');
+
+    Route::get('smart-collections', SmartCollectionsIndex::class)->name('smart-collections.index');
+    Route::get('smart-collections/create', SmartCollectionsCreate::class)->name('smart-collections.create');
+    Route::get('smart-collections/{smartCollection}/edit', SmartCollectionsEdit::class)->name('smart-collections.edit');
 
     Route::get('tags', TagsIndex::class)->name('tags.index');
 });

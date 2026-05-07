@@ -20,6 +20,18 @@
                         :current="request()->routeIs('snippets.index') || request()->routeIs('snippets.create') || request()->routeIs('snippets.edit')"
                         wire:navigate
                     >{{ __('nav.snippets') }}</flux:navlist.item>
+                    <flux:navlist.item
+                        icon="folder"
+                        :href="route('folders.index')"
+                        :current="request()->routeIs('folders.index') || request()->routeIs('folders.create') || request()->routeIs('folders.edit')"
+                        wire:navigate
+                    >{{ __('nav.folders') }}</flux:navlist.item>
+                    <flux:navlist.item
+                        icon="funnel"
+                        :href="route('smart-collections.index')"
+                        :current="request()->routeIs('smart-collections.index') || request()->routeIs('smart-collections.create') || request()->routeIs('smart-collections.edit')"
+                        wire:navigate
+                    >{{ __('nav.smart_collections') }}</flux:navlist.item>
                     <flux:navlist.item icon="book-open-text" :href="route('tags.index')" :current="request()->routeIs('tags.index')" wire:navigate>{{ __('nav.tags') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
