@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# docker/8.5/start-container
+
+# Устанавливаем значение по умолчанию если не задано
+SUPERVISOR_PHP_USER=${SUPERVISOR_PHP_USER:-sail}
+
+if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
+    echo "You should set SUPERVISOR_PHP_USER to either 'sail' or 'root'."
+    exit 1
+fi
+
+if [ ! -z "$WWWUSER" ]; then
+    usermod -u $WWWUSER sail
+fi
+
+if [ ! -d /.composer ]; then
+    mkdir /.composer
+fi
+
+chmod -R ugo+rw /.composer
+
+# Создаём директорию для логов супервизора
+mkdir -p /var/log/supervisor
+
+if [ $# -gt 0 ]; then
+    if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
+        exec "$@"
+    else
+        exec gosu "${WWWUSER:-sail}" "$@"
+    fi
+else
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+fi
