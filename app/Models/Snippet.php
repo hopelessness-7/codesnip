@@ -70,6 +70,16 @@ class Snippet extends Model
         return $this->hasMany(SnippetRevision::class);
     }
 
+    public function folders(): BelongsToMany
+    {
+        return $this->belongsToMany(Folder::class);
+    }
+
+    public function smartCollections(): BelongsToMany
+    {
+        return $this->belongsToMany(SmartCollection::class);
+    }
+
     public function scopePublic($query)
     {
         return $query->where('is_public', true);

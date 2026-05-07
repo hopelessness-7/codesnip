@@ -5,6 +5,7 @@ namespace App\Livewire\Snippets;
 use App\Enums\SnippetLanguage;
 use App\Livewire\Concerns\ParsesSnippetTags;
 use App\Models\Snippet;
+use App\Services\FolderService;
 use App\Services\SnippetService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -29,6 +30,9 @@ class Edit extends Component
 
     public string $tagsInput = '';
 
+    /** @var list<int> */
+    public array $folderIds = [];
+
     public ?string $shareUrl = null;
 
     public int $editorRenderKey = 0;
@@ -44,10 +48,11 @@ class Edit extends Component
             : (string) $snippet->language;
         $this->is_public = (bool) $snippet->is_public;
         $this->tagsInput = $snippet->tags->pluck('name')->implode(', ');
+        $this->folderIds = $snippet->folders->pluck('id')->map(fn ($id) => (int) $id)->all();
         $this->shareUrl = null;
     }
 
-    public function save(SnippetService $snippets): void
+    public function save(SnippetService $snippets, FolderService $folders): void
     {
         $this->authorize('update', $this->snippet);
 
@@ -57,9 +62,18 @@ class Edit extends Component
             'language' => ['required', 'string', 'in:'.collect(SnippetLanguage::cases())->map->value->implode(',')],
             'is_public' => ['boolean'],
             'tagsInput' => ['nullable', 'string', 'max:5000'],
+            'folderIds' => ['array'],
+            'folderIds.*' => ['integer', 'exists:folders,id'],
         ]);
 
         $tags = $this->parseTagsFromInput($this->tagsInput);
+
+        $allowedFolderIds = $folders->listForUser((int) auth()->id())
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->intersect($this->folderIds)
+            ->values()
+            ->all();
 
         $snippets->update($this->snippet, [
             'title' => $this->title,
@@ -68,10 +82,12 @@ class Edit extends Component
             'tags' => $tags,
             'is_public' => $this->is_public,
             'user_id' => $this->snippet->user_id,
+            'folder_ids' => $allowedFolderIds,
         ]);
 
-        $this->snippet->refresh()->load('tags');
+        $this->snippet->refresh()->load(['tags', 'folders']);
         $this->tagsInput = $this->snippet->tags->pluck('name')->implode(', ');
+        $this->folderIds = $this->snippet->folders->pluck('id')->map(fn ($id) => (int) $id)->all();
         $this->dispatch('app-toast', type: 'success', message: __('snippets.edit.saved_text'));
     }
 
@@ -112,10 +128,11 @@ class Edit extends Component
         );
     }
 
-    public function render()
+    public function render(FolderService $folders)
     {
         return view('livewire.snippets.edit', [
             'languages' => SnippetLanguage::cases(),
+            'folders' => $folders->listForUser((int) auth()->id()),
             'publicPageUrl' => $this->snippet->is_public ? route('snippets.publicOpen', ['uuid' => $this->snippet->uuid]) : null,
         ]);
     }

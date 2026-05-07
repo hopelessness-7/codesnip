@@ -40,7 +40,7 @@ readonly class SnippetRepository extends BaseRepository implements SnippetReposi
     {
         $query = $this->query()
             ->where('user_id', $userId)
-            ->with('tags')
+            ->with(['tags', 'folders'])
             ->when($filters->query, function ($q) use ($filters) {
                 $q->where(function ($sub) use ($filters) {
                     $sub->where('title', 'like', "%{$filters->query}%")
@@ -71,6 +71,16 @@ readonly class SnippetRepository extends BaseRepository implements SnippetReposi
                         $sub->where('name', $tag)->orWhere('slug', $tag);
                     });
                 }
+            })
+            ->when($filters->folderIds !== [], function ($q) use ($filters) {
+                $q->whereHas('folders', function ($sub) use ($filters) {
+                    $sub->whereIn('folders.id', $filters->folderIds);
+                });
+            })
+            ->when($filters->smartCollectionId !== null, function ($q) use ($filters) {
+                $q->whereHas('smartCollections', function ($sub) use ($filters) {
+                    $sub->where('smart_collections.id', $filters->smartCollectionId);
+                });
             });
 
         $this->applySort($query, $filters);
@@ -226,5 +236,10 @@ readonly class SnippetRepository extends BaseRepository implements SnippetReposi
             ->orderByDesc('snippets_count')
             ->limit($limit)
             ->get();
+    }
+
+    public function getByUserSnippets(int $userId): Collection
+    {
+        return $this->query()->with('tags')->where('user_id', $userId)->get();
     }
 }
