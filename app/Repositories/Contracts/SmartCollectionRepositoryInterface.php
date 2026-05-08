@@ -9,4 +9,5 @@ interface SmartCollectionRepositoryInterface extends BaseRepositoryInterface
 {
     public function findByUser(int $userId): Collection;
     public function findForUser(int $userId, int $collectionId): ?SmartCollection;
+    public function countByUser(int $userId): int;
 }

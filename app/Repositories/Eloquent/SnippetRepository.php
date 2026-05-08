@@ -242,4 +242,31 @@ readonly class SnippetRepository extends BaseRepository implements SnippetReposi
     {
         return $this->query()->with('tags')->where('user_id', $userId)->get();
     }
+
+    public function countByUser(int $userId): int
+    {
+        return $this->query()->where('user_id', $userId)->count();
+    }
+
+    public function countPublicByUser(int $userId): int
+    {
+        return $this->query()->where('user_id', $userId)->where('is_public', true)->count();
+    }
+
+    public function countWithoutFoldersByUser(int $userId): int
+    {
+        return $this->query()
+            ->where('user_id', $userId)
+            ->whereDoesntHave('folders')
+            ->count();
+    }
+
+    public function getRecentByUser(int $userId, int $limit = 6): Collection
+    {
+        return $this->query()
+            ->where('user_id', $userId)
+            ->latest('updated_at')
+            ->limit($limit)
+            ->get(['id', 'title', 'language', 'updated_at']);
+    }
 }

@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\FolderRepositoryInterface;
+use App\Repositories\Contracts\SnippetRepositoryInterface;
 use App\Repositories\Contracts\SmartCollectionRepositoryInterface;
 use App\Repositories\Contracts\TagRepositoryInterface;
 use App\Repositories\Eloquent\FolderRepository;
+use App\Repositories\Eloquent\SnippetRepository;
 use App\Repositories\Eloquent\SmartCollectionRepository;
 use App\Repositories\Eloquent\TagRepository;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +32,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             SmartCollectionRepositoryInterface::class,
             SmartCollectionRepository::class
+        );
+
+        $this->app->bind(
+            SnippetRepositoryInterface::class,
+            SnippetRepository::class
         );
     }
 

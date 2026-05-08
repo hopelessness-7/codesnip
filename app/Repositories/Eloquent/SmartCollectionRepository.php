@@ -26,4 +26,9 @@ readonly class SmartCollectionRepository extends BaseRepository implements Smart
             ->where('id', $collectionId)
             ->first();
     }
+
+    public function countByUser(int $userId): int
+    {
+        return $this->query()->where('user_id', $userId)->count();
+    }
 }

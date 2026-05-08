@@ -26,4 +26,9 @@ readonly class FolderRepository extends BaseRepository implements FolderReposito
             ->where('id', $folderId)
             ->first();
     }
+
+    public function countByUser(int $userId): int
+    {
+        return $this->query()->where('user_id', $userId)->count();
+    }
 }
