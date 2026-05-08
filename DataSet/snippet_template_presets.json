@@ -1,0 +1,110 @@
+{
+  "php": {
+    "description": "Base PHP class template with placeholders.",
+    "title_template": "[[entity]] service",
+    "code_template": "<?php\n\ndeclare(strict_types=1);\n\nnamespace App\\\\Services;\n\nclass [[entity]]Service\n{\n    public function execute(array $payload = []): array\n    {\n        // TODO: implement [[entity]] logic\n        return $payload;\n    }\n}\n",
+    "default_tags": [
+      "php",
+      "service"
+    ]
+  },
+  "javascript": {
+    "description": "Base JavaScript utility function template.",
+    "title_template": "[[feature]] util",
+    "code_template": "export function [[feature]]Util(input = {}) {\n  // TODO: implement [[feature]]\n  return input;\n}\n",
+    "default_tags": [
+      "javascript",
+      "utility"
+    ]
+  },
+  "typescript": {
+    "description": "Base TypeScript service template with typed payload.",
+    "title_template": "[[entity]] service ts",
+    "code_template": "type [[entity]]Payload = Record<string, unknown>;\n\nexport class [[entity]]Service {\n  execute(payload: [[entity]]Payload): [[entity]]Payload {\n    // TODO: implement [[entity]]\n    return payload;\n  }\n}\n",
+    "default_tags": [
+      "typescript",
+      "service"
+    ]
+  },
+  "python": {
+    "description": "Base Python class template with run method.",
+    "title_template": "[[entity]] handler",
+    "code_template": "class [[entity]]Handler:\n    def run(self, payload: dict | None = None) -> dict:\n        payload = payload or {}\n        # TODO: implement [[entity]]\n        return payload\n",
+    "default_tags": [
+      "python",
+      "handler"
+    ]
+  },
+  "sql": {
+    "description": "Base SQL query template.",
+    "title_template": "[[entity]] query",
+    "code_template": "-- [[entity]] query\nSELECT\n    *\nFROM\n    [[table_name]]\nWHERE\n    1 = 1;\n",
+    "default_tags": [
+      "sql",
+      "query"
+    ]
+  },
+  "html": {
+    "description": "Base HTML section template.",
+    "title_template": "[[feature]] section",
+    "code_template": "<section class=\"[[feature]]-section\">\n  <h2>[[feature_title]]</h2>\n  <p>TODO: describe [[feature]].</p>\n</section>\n",
+    "default_tags": [
+      "html",
+      "markup"
+    ]
+  },
+  "css": {
+    "description": "Base CSS component style template.",
+    "title_template": "[[component]] styles",
+    "code_template": ".[[component]] {\n  display: block;\n  /* TODO: style [[component]] */\n}\n",
+    "default_tags": [
+      "css",
+      "styles"
+    ]
+  },
+  "shell": {
+    "description": "Base shell script template.",
+    "title_template": "[[task]] script",
+    "code_template": "#!/usr/bin/env bash\nset -euo pipefail\n\nTASK_NAME=\"[[task]]\"\n\necho \"Running ${TASK_NAME}\"\n# TODO: implement script\n",
+    "default_tags": [
+      "shell",
+      "script"
+    ]
+  },
+  "dockerfile": {
+    "description": "Base Dockerfile template.",
+    "title_template": "[[service]] docker image",
+    "code_template": "FROM [[base_image]]\n\nWORKDIR /app\nCOPY . .\n\nRUN [[build_command]]\n\nCMD [\"[[start_command]]\"]\n",
+    "default_tags": [
+      "dockerfile",
+      "container"
+    ]
+  },
+  "yaml": {
+    "description": "Base YAML config template.",
+    "title_template": "[[service]] config",
+    "code_template": "service:\n  name: [[service]]\n  environment: [[environment]]\n  enabled: true\n",
+    "default_tags": [
+      "yaml",
+      "config"
+    ]
+  },
+  "json": {
+    "description": "Base JSON payload template.",
+    "title_template": "[[entity]] payload",
+    "code_template": "{\n  \"entity\": \"[[entity]]\",\n  \"version\": 1,\n  \"data\": {\n    \"key\": \"value\"\n  }\n}\n",
+    "default_tags": [
+      "json",
+      "payload"
+    ]
+  },
+  "markdown": {
+    "description": "Base Markdown note template.",
+    "title_template": "[[topic]] notes",
+    "code_template": "# [[topic]]\n\n## Summary\n- TODO\n\n## Steps\n1. TODO\n\n## References\n- [[link]]\n",
+    "default_tags": [
+      "markdown",
+      "notes"
+    ]
+  }
+}

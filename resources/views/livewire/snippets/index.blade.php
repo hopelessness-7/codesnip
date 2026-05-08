@@ -8,6 +8,7 @@
             <flux:button size="sm" variant="ghost" wire:click="toggleFilters" type="button">
                 {{ $filtersOpen ? __('snippets.index.filters_hide') : __('snippets.index.filters_show') }}
             </flux:button>
+            <flux:button size="sm" variant="ghost" :href="route('snippet-templates.index')" wire:navigate>{{ __('snippets.index.templates') }}</flux:button>
             <flux:button size="sm" variant="primary" :href="route('snippets.create')" wire:navigate>{{ __('snippets.index.new') }}</flux:button>
         </div>
     </div>

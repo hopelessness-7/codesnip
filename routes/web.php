@@ -6,6 +6,9 @@ use App\Http\Controllers\Web\V1\SnippetController;
 use App\Livewire\Folders\Create as FoldersCreate;
 use App\Livewire\Folders\Edit as FoldersEdit;
 use App\Livewire\Folders\Index as FoldersIndex;
+use App\Livewire\SnippetTemplates\Create as SnippetTemplatesCreate;
+use App\Livewire\SnippetTemplates\Edit as SnippetTemplatesEdit;
+use App\Livewire\SnippetTemplates\Index as SnippetTemplatesIndex;
 use App\Livewire\Snippets\Create as SnippetsCreate;
 use App\Livewire\Snippets\Edit as SnippetsEdit;
 use App\Livewire\Snippets\Index as SnippetsIndex;
@@ -45,6 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('snippets', SnippetsIndex::class)->name('snippets.index');
     Route::get('snippets/create', SnippetsCreate::class)->name('snippets.create');
     Route::get('snippets/{snippet}/edit', SnippetsEdit::class)->name('snippets.edit');
+    Route::get('snippet-templates', SnippetTemplatesIndex::class)->name('snippet-templates.index');
+    Route::get('snippet-templates/create', SnippetTemplatesCreate::class)->name('snippet-templates.create');
+    Route::get('snippet-templates/{snippetTemplate}/edit', SnippetTemplatesEdit::class)->name('snippet-templates.edit');
 
     Route::get('folders', FoldersIndex::class)->name('folders.index');
     Route::get('folders/create', FoldersCreate::class)->name('folders.create');

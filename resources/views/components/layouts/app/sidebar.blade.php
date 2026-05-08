@@ -21,6 +21,12 @@
                         wire:navigate
                     >{{ __('nav.snippets') }}</flux:navlist.item>
                     <flux:navlist.item
+                        icon="document-duplicate"
+                        :href="route('snippet-templates.index')"
+                        :current="request()->routeIs('snippet-templates.index') || request()->routeIs('snippet-templates.create') || request()->routeIs('snippet-templates.edit')"
+                        wire:navigate
+                    >{{ __('nav.snippet_templates') }}</flux:navlist.item>
+                    <flux:navlist.item
                         icon="folder"
                         :href="route('folders.index')"
                         :current="request()->routeIs('folders.index') || request()->routeIs('folders.create') || request()->routeIs('folders.edit')"
