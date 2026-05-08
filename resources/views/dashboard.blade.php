@@ -51,6 +51,7 @@
 
         <div class="flex flex-wrap gap-2">
             <flux:button size="sm" variant="primary" :href="route('snippets.create')" wire:navigate>{{ __('dashboard.btn_new') }}</flux:button>
+            <flux:button size="sm" variant="ghost" :href="route('snippet-templates.index')" wire:navigate>{{ __('dashboard.btn_templates') }}</flux:button>
             <flux:button size="sm" variant="ghost" :href="route('snippets.index')" wire:navigate>{{ __('dashboard.btn_all') }}</flux:button>
             <flux:button size="sm" variant="ghost" :href="route('folders.create')" wire:navigate>{{ __('dashboard.btn_new_folder') }}</flux:button>
             <flux:button size="sm" variant="ghost" :href="route('smart-collections.create')" wire:navigate>{{ __('dashboard.btn_new_collection') }}</flux:button>

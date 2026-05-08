@@ -5,6 +5,28 @@
     </div>
 
     <form wire:submit="save" class="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:select size="sm" wire:model.live="templateId" :label="__('snippets.create.template_label')">
+            <flux:select.option value="">{{ __('snippets.create.template_none') }}</flux:select.option>
+            @foreach ($templates as $template)
+                <flux:select.option value="{{ $template->id }}">{{ $template->name }}</flux:select.option>
+            @endforeach
+        </flux:select>
+
+        @if ($templateVariables !== [])
+            <div class="grid gap-2 rounded border border-zinc-200 p-3 dark:border-zinc-700">
+                <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ __('snippets.create.template_variables') }}</span>
+                <div class="grid gap-2 sm:grid-cols-2">
+                    @foreach ($templateVariables as $var)
+                        <flux:input
+                            size="sm"
+                            wire:model.live.debounce.300ms="templateVariableValues.{{ $var }}"
+                            :label="'[['.$var.']]'"
+                        />
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <flux:input size="sm" wire:model="title" :label="__('snippets.create.title_label')" required />
 
         <flux:select size="sm" wire:model.live="language" :label="__('snippets.create.language_label')" required>
@@ -24,7 +46,7 @@
                 </div>
             </div>
             <div
-                wire:key="cm-{{ $language }}"
+                wire:key="cm-{{ $language }}-{{ $editorRenderKey }}"
                 wire:ignore
                 class="min-h-[min(70vh,520px)] overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700"
                 x-data
