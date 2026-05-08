@@ -25,4 +25,10 @@ interface SnippetRepositoryInterface extends BaseRepositoryInterface
     public function syncTags(Snippet $snippet, array $tags): void;
 
     public function getPopularTags(?int $userId = null, int $limit = 20): Collection;
+
+    public function countByUser(int $userId): int;
+    public function countPublicByUser(int $userId): int;
+    public function countWithoutFoldersByUser(int $userId): int;
+    public function getRecentByUser(int $userId, int $limit = 6): Collection;
+    public function getByUserSnippets(int $userId): Collection;
 }

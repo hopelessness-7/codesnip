@@ -9,4 +9,5 @@ interface FolderRepositoryInterface extends BaseRepositoryInterface
 {
     public function findByUser(int $userId): Collection;
     public function findForUser(int $userId, int $folderId): ?Folder;
+    public function countByUser(int $userId): int;
 }
