@@ -17,9 +17,15 @@
                     <flux:navlist.item
                         icon="layout-grid"
                         :href="route('snippets.index')"
-                        :current="request()->routeIs('snippets.index') || request()->routeIs('snippets.create') || request()->routeIs('snippets.edit')"
+                        :current="request()->routeIs('snippets.index') || request()->routeIs('snippets.create') || request()->routeIs('snippets.edit') || request()->routeIs('snippets.import-export')"
                         wire:navigate
                     >{{ __('nav.snippets') }}</flux:navlist.item>
+                    <flux:navlist.item
+                        icon="arrow-up-tray"
+                        :href="route('snippets.import-export')"
+                        :current="request()->routeIs('snippets.import-export')"
+                        wire:navigate
+                    >{{ __('nav.snippets_import_export') }}</flux:navlist.item>
                     <flux:navlist.item
                         icon="document-duplicate"
                         :href="route('snippet-templates.index')"

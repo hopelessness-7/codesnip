@@ -269,4 +269,9 @@ readonly class SnippetRepository extends BaseRepository implements SnippetReposi
             ->limit($limit)
             ->get(['id', 'title', 'language', 'updated_at']);
     }
+
+    public function findManyForUser(int $userId, array $snippetIds, array $relations = []): Collection
+    {
+        return $this->query()->with($relations)->where('user_id', $userId)->findMany($snippetIds);
+    }
 }

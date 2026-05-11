@@ -17,7 +17,8 @@
         "livewire/flux": "^2.0",
         "livewire/volt": "^1.6.7",
         "meilisearch/meilisearch-php": "*",
-        "openai-php/laravel": "*"
+        "openai-php/laravel": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

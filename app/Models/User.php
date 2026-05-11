@@ -23,6 +23,7 @@ class User extends Authenticatable // implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'github_personal_access_token',
     ];
 
     /**
@@ -33,6 +34,7 @@ class User extends Authenticatable // implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'github_personal_access_token',
     ];
 
     /**
@@ -45,6 +47,7 @@ class User extends Authenticatable // implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'github_personal_access_token' => 'encrypted',
         ];
     }
 
