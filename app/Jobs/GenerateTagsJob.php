@@ -45,9 +45,14 @@ class GenerateTagsJob implements ShouldQueue
     private function fetchTagsFromOllama(): array
     {
         try {
+            $this->snippet->loadMissing('user');
+            $model = ($this->snippet->user && is_string($this->snippet->user->ollama_model) && $this->snippet->user->ollama_model !== '')
+                ? $this->snippet->user->ollama_model
+                : (string) config('openai.ollama.model');
+
             $ollamaProvider = new OllamaProvider([
                 'host' => config('openai.ollama.host'),
-                'model' => config('openai.ollama.model'),
+                'model' => $model,
             ]);
 
             $prompt = $this->buildPrompt();

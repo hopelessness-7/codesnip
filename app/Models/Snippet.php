@@ -23,6 +23,9 @@ class Snippet extends Model
         'code',
         'language',
         'is_public',
+        'ai_summary',
+        'ai_explanation',
+        'ai_generated_test',
     ];
 
     protected $casts = [

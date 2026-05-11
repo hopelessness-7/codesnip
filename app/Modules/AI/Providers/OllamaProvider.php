@@ -62,4 +62,62 @@ class OllamaProvider extends AbstractAiProvider
             return false;
         }
     }
+
+    /**
+     * Locally installed model names from Ollama (`GET /api/tags`).
+     *
+     * @return list<string>
+     */
+    public function listLocalModelNames(): array
+    {
+        try {
+            $response = Http::timeout(10)->get("{$this->config['host']}/api/tags");
+            if (! $response->successful()) {
+                return [];
+            }
+
+            $models = $response->json('models');
+            if (! is_array($models)) {
+                return [];
+            }
+
+            return collect($models)
+                ->pluck('name')
+                ->filter(fn ($name) => is_string($name) && $name !== '')
+                ->map(fn (string $name) => $name)
+                ->values()
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Models currently loaded in memory (`GET /api/ps`).
+     *
+     * @return list<string>
+     */
+    public function listRunningModelNames(): array
+    {
+        try {
+            $response = Http::timeout(10)->get("{$this->config['host']}/api/ps");
+            if (! $response->successful()) {
+                return [];
+            }
+
+            $models = $response->json('models');
+            if (! is_array($models)) {
+                return [];
+            }
+
+            return collect($models)
+                ->pluck('name')
+                ->filter(fn ($name) => is_string($name) && $name !== '')
+                ->map(fn (string $name) => $name)
+                ->values()
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
 }

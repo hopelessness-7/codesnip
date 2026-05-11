@@ -27,7 +27,7 @@
                     <flux:navbar.item
                         class="h-10 max-lg:hidden [&>div>svg]:size-5"
                         icon="folder-git-2"
-                        href="https://github.com/laravel/livewire-starter-kit"
+                        href="https://github.com/hopelessness-7/codesnip"
                         target="_blank"
                         label="Repository"
                     />

@@ -6,6 +6,7 @@ use App\Enums\SnippetLanguage;
 use App\Livewire\Concerns\ParsesSnippetTags;
 use App\Models\Snippet;
 use App\Services\FolderService;
+use App\Services\SnippetAiService;
 use App\Services\SnippetService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -37,6 +38,12 @@ class Edit extends Component
 
     public int $editorRenderKey = 0;
 
+    public string $aiSummary = '';
+
+    public string $aiExplanation = '';
+
+    public string $aiGeneratedTest = '';
+
     public function mount(Snippet $snippet): void
     {
         $this->authorize('update', $snippet);
@@ -49,6 +56,9 @@ class Edit extends Component
         $this->is_public = (bool) $snippet->is_public;
         $this->tagsInput = $snippet->tags->pluck('name')->implode(', ');
         $this->folderIds = $snippet->folders->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $this->aiSummary = (string) ($snippet->ai_summary ?? '');
+        $this->aiExplanation = (string) ($snippet->ai_explanation ?? '');
+        $this->aiGeneratedTest = (string) ($snippet->ai_generated_test ?? '');
         $this->shareUrl = null;
     }
 
@@ -81,6 +91,9 @@ class Edit extends Component
             'language' => $this->language,
             'tags' => $tags,
             'is_public' => $this->is_public,
+            'ai_summary' => $this->aiSummary !== '' ? $this->aiSummary : null,
+            'ai_explanation' => $this->aiExplanation !== '' ? $this->aiExplanation : null,
+            'ai_generated_test' => $this->aiGeneratedTest !== '' ? $this->aiGeneratedTest : null,
             'user_id' => $this->snippet->user_id,
             'folder_ids' => $allowedFolderIds,
         ]);
@@ -105,6 +118,45 @@ class Edit extends Component
         $this->shareUrl = $payload['url'] ?? null;
     }
 
+    public function generateAiSummary(SnippetAiService $ai): void
+    {
+        $this->authorize('update', $this->snippet);
+        $result = $ai->generateSummary($this->snippet);
+        if (! $result['ok']) {
+            $this->dispatch('app-toast', type: 'error', message: __('snippets.ai.error'));
+            return;
+        }
+
+        $this->aiSummary = (string) $result['content'];
+        $this->dispatch('app-toast', type: 'success', message: __('snippets.ai.summary_ready'));
+    }
+
+    public function generateAiExplanation(SnippetAiService $ai): void
+    {
+        $this->authorize('update', $this->snippet);
+        $result = $ai->explainCode($this->snippet);
+        if (! $result['ok']) {
+            $this->dispatch('app-toast', type: 'error', message: __('snippets.ai.error'));
+            return;
+        }
+
+        $this->aiExplanation = (string) $result['content'];
+        $this->dispatch('app-toast', type: 'success', message: __('snippets.ai.explain_ready'));
+    }
+
+    public function generateAiTest(SnippetAiService $ai): void
+    {
+        $this->authorize('update', $this->snippet);
+        $result = $ai->generateTest($this->snippet);
+        if (! $result['ok']) {
+            $this->dispatch('app-toast', type: 'error', message: __('snippets.ai.error'));
+            return;
+        }
+
+        $this->aiGeneratedTest = (string) $result['content'];
+        $this->dispatch('app-toast', type: 'success', message: __('snippets.ai.test_ready'));
+    }
+
     #[On('snippet-rolled-back')]
     public function handleSnippetRolledBack(int $snippetId, ?int $revisionVersion = null): void
     {
@@ -118,6 +170,9 @@ class Edit extends Component
         $this->language = (string) $this->snippet->language;
         $this->is_public = (bool) $this->snippet->is_public;
         $this->tagsInput = $this->snippet->tags->pluck('name')->implode(', ');
+        $this->aiSummary = (string) ($this->snippet->ai_summary ?? '');
+        $this->aiExplanation = (string) ($this->snippet->ai_explanation ?? '');
+        $this->aiGeneratedTest = (string) ($this->snippet->ai_generated_test ?? '');
         $this->editorRenderKey++;
         $this->dispatch(
             'app-toast',
