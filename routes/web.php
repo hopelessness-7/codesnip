@@ -12,6 +12,7 @@ use App\Livewire\SnippetTemplates\Index as SnippetTemplatesIndex;
 use App\Livewire\Snippets\Create as SnippetsCreate;
 use App\Livewire\Snippets\Edit as SnippetsEdit;
 use App\Livewire\Snippets\Index as SnippetsIndex;
+use App\Livewire\Snippets\ImportExport as SnippetsImportExport;
 use App\Livewire\SmartCollections\Create as SmartCollectionsCreate;
 use App\Livewire\SmartCollections\Edit as SmartCollectionsEdit;
 use App\Livewire\SmartCollections\Index as SmartCollectionsIndex;
@@ -48,6 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('snippets', SnippetsIndex::class)->name('snippets.index');
     Route::get('snippets/create', SnippetsCreate::class)->name('snippets.create');
     Route::get('snippets/{snippet}/edit', SnippetsEdit::class)->name('snippets.edit');
+    Route::get('snippets/import-export', SnippetsImportExport::class)->name('snippets.import-export');
     Route::get('snippet-templates', SnippetTemplatesIndex::class)->name('snippet-templates.index');
     Route::get('snippet-templates/create', SnippetTemplatesCreate::class)->name('snippet-templates.create');
     Route::get('snippet-templates/{snippetTemplate}/edit', SnippetTemplatesEdit::class)->name('snippet-templates.edit');

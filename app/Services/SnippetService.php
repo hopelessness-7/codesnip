@@ -8,6 +8,7 @@ use App\Models\Snippet;
 use App\Repositories\Eloquent\SnippetRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class SnippetService extends BaseService
 {
@@ -32,6 +33,29 @@ class SnippetService extends BaseService
     public function findByUuid(string $uuid): ?Snippet
     {
         return $this->repository->findByUuid($uuid);
+    }
+
+    public function getByUserSnippets(int $userId): Collection
+    {
+        return $this->repository->getByUserSnippets($userId);
+    }
+
+    public function getRecentByUser(int $userId, int $limit = 3): Collection
+    {
+        return $this->repository->getRecentByUser($userId, $limit);
+    }
+
+    public function searchForUser(int $userId, string $query, int $limit = 12): Collection
+    {
+        $filters = SearchFilters::fromArray([
+            'query' => $query,
+            'per_page' => $limit,
+            'page' => 1,
+            'sort_by' => 'updated_at',
+            'sort_direction' => 'desc',
+        ]);
+
+        return $this->findByUser($userId, $filters)->getCollection();
     }
 
     public function generatePublicLink(int $id): array
