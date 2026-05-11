@@ -2,11 +2,19 @@
 
 use Livewire\Volt\Component;
 
+use function Livewire\Volt\layout;
+use function Livewire\Volt\title;
+
 new class extends Component {
     //
-}; ?>
+};
 
-<div class="flex flex-col items-start">
+layout('components.layouts.app');
+title(fn () => __('settings.appearance_page_title'));
+
+?>
+
+<div class="flex w-full flex-col gap-4 p-3 sm:p-4 lg:p-6">
     @include('partials.settings-heading')
 
     <x-settings.layout heading="Appearance" subheading="Update your account's appearance settings">

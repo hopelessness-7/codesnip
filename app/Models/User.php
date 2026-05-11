@@ -24,6 +24,7 @@ class User extends Authenticatable // implements MustVerifyEmail
         'email',
         'password',
         'github_personal_access_token',
+        'ollama_model',
     ];
 
     /**

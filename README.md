@@ -1,5 +1,7 @@
 # CodeSnip
 
+Full documentation for sections **[docs/README.md](docs/README.md)**. (as presented in the git wiki)
+
 CodeSnip is a Laravel + Livewire application for storing, editing, searching, sharing, and versioning code snippets.
 
 The project is focused on practical developer workflows:

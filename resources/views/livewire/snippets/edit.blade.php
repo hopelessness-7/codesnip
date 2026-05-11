@@ -44,6 +44,17 @@
                             <span class="inline-flex items-center rounded bg-zinc-100 px-2 py-1 text-[11px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">Ctrl/Cmd+S</span>
                         </div>
                     </div>
+                    <div class="flex flex-wrap gap-2 rounded border border-zinc-200 p-2 dark:border-zinc-700">
+                        <flux:button size="xs" variant="ghost" type="button" wire:click="generateAiSummary" wire:loading.attr="disabled">
+                            {{ __('snippets.ai.summary_btn') }}
+                        </flux:button>
+                        <flux:button size="xs" variant="ghost" type="button" wire:click="generateAiExplanation" wire:loading.attr="disabled">
+                            {{ __('snippets.ai.explain_btn') }}
+                        </flux:button>
+                        <flux:button size="xs" variant="ghost" type="button" wire:click="generateAiTest" wire:loading.attr="disabled">
+                            {{ __('snippets.ai.test_btn') }}
+                        </flux:button>
+                    </div>
                     <div
                         wire:key="cm-{{ $language }}-{{ $editorRenderKey }}"
                         wire:ignore
@@ -58,6 +69,31 @@
                         x-ref="cm"
                     ></div>
                 </div>
+
+                @if ($aiSummary !== '' || $aiExplanation !== '' || $aiGeneratedTest !== '')
+                    <div class="grid gap-3 rounded-lg border border-zinc-200 p-3 dark:border-zinc-700">
+                        @if ($aiSummary !== '')
+                            <div class="grid gap-1">
+                                <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ __('snippets.ai.summary_title') }}</h4>
+                                <pre class="max-h-56 overflow-auto whitespace-pre-wrap break-words rounded border border-zinc-200 bg-zinc-50 p-2 text-xs leading-5 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">{{ $aiSummary }}</pre>
+                            </div>
+                        @endif
+
+                        @if ($aiExplanation !== '')
+                            <div class="grid gap-1">
+                                <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ __('snippets.ai.explain_title') }}</h4>
+                                <pre class="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded border border-zinc-200 bg-zinc-50 p-2 text-xs leading-5 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">{{ $aiExplanation }}</pre>
+                            </div>
+                        @endif
+
+                        @if ($aiGeneratedTest !== '')
+                            <div class="grid gap-1">
+                                <h4 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ __('snippets.ai.test_title') }}</h4>
+                                <pre class="max-h-72 overflow-auto whitespace-pre-wrap break-words rounded border border-zinc-200 bg-zinc-50 p-2 text-xs leading-5 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">{{ $aiGeneratedTest }}</pre>
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 <flux:input
                     size="sm"

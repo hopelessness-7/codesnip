@@ -6,6 +6,9 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Livewire\Volt\Component;
 
+use function Livewire\Volt\layout;
+use function Livewire\Volt\title;
+
 new class extends Component {
     public string $current_password = '';
     public string $password = '';
@@ -35,9 +38,14 @@ new class extends Component {
 
         $this->dispatch('password-updated');
     }
-}; ?>
+};
 
-<section class="w-full">
+layout('components.layouts.app');
+title(fn () => __('settings.password_page_title'));
+
+?>
+
+<div class="flex w-full flex-col gap-4 p-3 sm:p-4 lg:p-6">
     @include('partials.settings-heading')
 
     <x-settings.layout heading="Update password" subheading="Ensure your account is using a long, random password to stay secure">
@@ -81,4 +89,4 @@ new class extends Component {
             </div>
         </form>
     </x-settings.layout>
-</section>
+</div>
