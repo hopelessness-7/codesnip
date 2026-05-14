@@ -165,6 +165,28 @@ services:
                 - 'http://127.0.0.1:7700/health'
             retries: 3
             timeout: 5s
+    log-stream:
+        build:
+            context: ./services/log-stream
+            dockerfile: Dockerfile
+        container_name: codesnip-log-stream
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_LOG_STREAM_WS_PORT:-8081}:8081'
+        environment:
+            LOG_DIR: /var/www/html/storage/logs
+            LOG_FILE: '*'
+            LOG_GLOB: '*.log'
+            WS_PORT: '8081'
+            WS_TOKEN: '${LOG_STREAM_WS_TOKEN:-dev-secret-change-me}'
+            LOG_MIN_LEVEL: '${LOG_STREAM_MIN_LEVEL:-DEBUG}'
+        volumes:
+            - ./storage/logs:/var/www/html/storage/logs:ro
+        networks:
+            - sail
+        depends_on:
+            laravel.test:
+                condition: service_healthy
     ollama:
       image: 'ollama/ollama:latest'
       container_name: codesnip-ollama

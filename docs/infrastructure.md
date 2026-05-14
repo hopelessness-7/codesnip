@@ -14,6 +14,7 @@
 | `meilisearch` | Опциональный поисковый движок для Scout |
 | `mongodb` | Локальный совместимый образ (по необходимости проекта) |
 | `ollama` | Локальные LLM для ИИ |
+| `log-stream` | Node: WebSocket + мини-HTTP для стриминга `storage/logs/laravel.log` (см. `services/log-stream/README.md`) |
 
 Сеть по умолчанию: **`sail`**. Тома для персистентных данных: MariaDB, Redis, Meilisearch, MongoDB, Ollama.
 

@@ -18,5 +18,6 @@
 | [frontend-i18n.md](frontend-i18n.md) | Vite, Flux, локализация |
 | [testing.md](testing.md) | Тесты, Pint, полезные команды |
 | [security.md](security.md) | Политики, публичные ссылки, секреты |
+| [Сервис log-stream](../services/log-stream/README.md) | WebSocket-стриминг `laravel.log` (Node, Docker) |
 
 Короткое введение для новых участников: [overview.md](overview.md) → [getting-started.md](getting-started.md) → [architecture.md](architecture.md).

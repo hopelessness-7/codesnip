@@ -1,5 +1,6 @@
 /.phpunit.cache
-/node_modules
+# Any node_modules (root had only /node_modules — nested e.g. services/*/node_modules must be ignored)
+node_modules/
 /public/build
 /public/hot
 /public/storage

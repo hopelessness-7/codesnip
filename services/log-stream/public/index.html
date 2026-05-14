@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Log Streaming</title>
+    <style>
+        body { background: #1e1e1e; color: #d4d4d4; font-family: ui-monospace, monospace; padding: 1rem; margin: 0; }
+        #log { white-space: pre-wrap; word-break: break-word; }
+        .meta { color: #858585; margin-bottom: 0.75rem; }
+        .error { color: #f44747; }
+        .warning { color: #cca700; }
+    </style>
+</head>
+<body>
+<h1 style="font-size: 1.1rem; font-weight: 600;">Live logs</h1>
+<p class="meta" id="status">Connecting…</p>
+<div id="log"></div>
+
+<script>
+    (function () {
+        const logDiv = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token') || 'dev-secret-token';
+        const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProto}//${window.location.host}/?token=${encodeURIComponent(token)}`;
+
+        const socket = new WebSocket(wsUrl);
+
+        socket.onopen = function () {
+            statusEl.textContent = 'Connected (' + wsUrl.replace(/token=[^&]+/, 'token=***') + ')';
+        };
+
+        socket.onmessage = function (event) {
+            let messages;
+            try {
+                messages = JSON.parse(event.data);
+            } catch (e) {
+                const div = document.createElement('div');
+                div.className = 'error';
+                div.textContent = event.data;
+                logDiv.appendChild(div);
+                return;
+            }
+
+            if (!Array.isArray(messages)) {
+                return;
+            }
+
+            for (const text of messages) {
+                const div = document.createElement('div');
+                if (text.includes('.ERROR:') || text.includes('.CRITICAL:') || text.includes('.ALERT:') || text.includes('.EMERGENCY:')) {
+                    div.className = 'error';
+                } else if (text.includes('.WARNING:')) {
+                    div.className = 'warning';
+                }
+                div.textContent = text;
+                logDiv.appendChild(div);
+            }
+        };
+
+        socket.onclose = function (e) {
+            statusEl.textContent = 'Disconnected (code ' + e.code + ')';
+        };
+
+        socket.onerror = function () {
+            statusEl.textContent = 'WebSocket error';
+        };
+    })();
+</script>
+</body>
+</html>
