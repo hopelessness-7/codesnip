@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Local secrets (root .gitignore also matches `.env` in subdirs)
+.env
+.env.local
+.env.production
+!.env.example
+
+# Logs / artifacts (never commit runtime logs from this service)
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Optional tooling output
+coverage/
+dist/
+.nyc_output/

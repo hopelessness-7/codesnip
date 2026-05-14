@@ -1,42 +1,73 @@
-const fs = require('fs');
-const path = require('path');
-const { startTail } = require('./tail-log');
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { WebSocketServer } from 'ws';
 
-function loadEnv(envPath) {
-    if (fs.existsSync(envPath)){
-        const lines = fs.readFileSync(envPath, 'utf8').split('\n')
-        for (const line of lines) {
-            const trimmed = line.trim();
-            // Ignore comments and empty values.
-            if (!trimmed || trimmed.startsWith('#')) continue;
+import { createBroadcastHub } from './broadcast.js';
+import { loadEnvFile } from './load-env.js';
+import { resolveWatchConfig, startMultiTail, startTail } from './tail-log.js';
 
-            const [key, ...rest] = trimmed.split("=");
-            const value = rest.join("=").trim();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-            if (key && value && !process.env[key]) {
-                process.env[key] = value;
-            }
+loadEnvFile(path.join(__dirname, '..', '.env'));
+
+const WS_PORT = Number.parseInt(process.env.WS_PORT ?? '8081', 10);
+const WS_TOKEN = process.env.WS_TOKEN ?? 'dev-secret-token';
+
+const watchConfig = resolveWatchConfig();
+
+const hub = createBroadcastHub({ wsToken: WS_TOKEN });
+
+const server = http.createServer((req, res) => {
+    const urlPath = (req.url ?? '/').split('?')[0];
+
+    if (req.method === 'GET' && (urlPath === '/' || urlPath === '/index.html')) {
+        const htmlPath = path.join(__dirname, '..', 'public', 'index.html');
+
+        if (fs.existsSync(htmlPath)) {
+            const html = fs.readFileSync(htmlPath, 'utf8');
+            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(html);
+
+            return;
         }
     }
+
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not Found');
+});
+
+const wss = new WebSocketServer({ server });
+hub.attachWebSocketServer(wss);
+
+const onFileLines = (label, lines) => hub.broadcastLines(label, lines);
+
+if (watchConfig.mode === 'single') {
+    startTail({
+        filePath: watchConfig.filePath,
+        fileLabel: watchConfig.fileLabel,
+        onFileLines,
+    });
+} else {
+    startMultiTail({
+        logDir: watchConfig.logDir,
+        filePattern: watchConfig.filePattern,
+        explicitNames: watchConfig.explicitNames,
+        onFileLines,
+    });
 }
-loadEnv(path.resolve(__dirname, '..', '.env'));
 
-const LOG_DIR = process.env.LOG_DIR || path.resolve(__dirname, '..', '..', '..', 'storage', 'logs');
-const LOG_FILE = process.env.LOG_FILE || 'laravel.log';
-const LOG_PATH = path.join(LOG_DIR, LOG_FILE);
-const TAIL_SIZE = 16 * 1024;
+server.listen(WS_PORT, '0.0.0.0', () => {
+    console.log(`[log-stream] HTTP + WS on port ${WS_PORT}`);
 
-startTail({
-    filePath: LOG_PATH,
-    onChunk: (lines) => {
-        for (const line of lines) {
-            console.log(`[${line.date}] ${line.level}: ${line.message}`)
-
-            if (line.isError && line.context?.exception) {
-                console.log(`${line.context.exception.message || 'No message'}`);
-            }
-        }
+    if (watchConfig.mode === 'single') {
+        console.log(`[log-stream] Mode: single file → ${watchConfig.filePath}`);
+    } else {
+        console.log(
+            `[log-stream] Mode: directory ${watchConfig.logDir} (pattern: ${watchConfig.explicitNames?.join(', ') || watchConfig.filePattern})`,
+        );
     }
-})
 
-console.log('✅ log-stream ready');
+    console.log(`[log-stream] Open http://localhost:${WS_PORT}/ (WebSocket same host/port)`);
+});
