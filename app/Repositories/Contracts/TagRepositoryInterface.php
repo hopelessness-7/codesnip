@@ -3,6 +3,7 @@
 namespace App\Repositories\Contracts;
 
 use App\Models\Tag;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface TagRepositoryInterface extends BaseRepositoryInterface
@@ -21,4 +22,8 @@ interface TagRepositoryInterface extends BaseRepositoryInterface
      * Tags attached to at least one snippet owned by the user, with per-user usage count.
      */
     public function forUserSnippets(int $userId): Collection;
+
+    public function paginateForUserSnippets(int $userId, int $perPage): LengthAwarePaginator;
+
+    public function topForUserSnippets(int $userId, int $limit): Collection;
 }

@@ -36,7 +36,7 @@ final class SmartCollectionRulesData extends BaseDTO
                 ? null
                 : filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
             tags: array_values(array_filter(array_map(fn ($v) => mb_strtolower(trim((string) $v)), $tags))),
-            tags_mode: in_array(($data['tags_mode'] ?? 'all'), ['all', 'any'], true) ? $data['tags_mode'] : 'all',
+            tags_mode: in_array(($data['tags_mode'] ?? 'all'), ['all', 'any'], true) ? ($data['tags_mode'] ?? 'all') : 'all',
             query: (string) ($data['query'] ?? ''),
             created_from: $data['created_from'] ?? null,
             created_to: $data['created_to'] ?? null,

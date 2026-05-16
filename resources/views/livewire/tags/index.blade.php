@@ -4,7 +4,7 @@
         <flux:subheading class="mt-0.5 text-sm">{{ __('tags.index.subtitle') }}</flux:subheading>
     </div>
 
-    <flux:table>
+    <flux:table :paginate="$tags">
         <flux:table.columns>
             <flux:table.column>{{ __('tags.index.col_name') }}</flux:table.column>
             <flux:table.column>{{ __('tags.index.col_slug') }}</flux:table.column>
@@ -40,6 +40,7 @@
                 <flux:table.row>
                     <flux:table.cell colspan="5" align="center" class="py-8 text-sm text-zinc-500">
                         {{ __('tags.index.empty') }}
+                        <flux:link :href="route('snippets.create')" wire:navigate class="ms-1">{{ __('tags.index.create_snippet_link') }}</flux:link>
                     </flux:table.cell>
                 </flux:table.row>
             @endforelse

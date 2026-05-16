@@ -9,7 +9,7 @@
         </flux:button>
     </div>
 
-    <flux:table>
+    <flux:table :paginate="$folders">
         <flux:table.columns>
             <flux:table.column>{{ __('folders.col_name') }}</flux:table.column>
             <flux:table.column>{{ __('folders.col_slug') }}</flux:table.column>
@@ -21,7 +21,7 @@
                 <flux:table.row :key="$folder->id">
                     <flux:table.cell class="font-medium">{{ $folder->name }}</flux:table.cell>
                     <flux:table.cell class="text-xs text-zinc-500">{{ $folder->slug }}</flux:table.cell>
-                    <flux:table.cell>{{ $folder->snippets()->count() }}</flux:table.cell>
+                    <flux:table.cell>{{ $folder->snippets_count }}</flux:table.cell>
                     <flux:table.cell align="end" class="space-x-1">
                         <flux:button
                             size="sm"
@@ -29,7 +29,7 @@
                             :href="route('snippets.index', ['folderIds' => [$folder->id]])"
                             wire:navigate
                         >
-                            {{ __('tags.index.view_snippets') }}
+                            {{ __('folders.view_snippets') }}
                         </flux:button>
                         <flux:button size="sm" variant="ghost" :href="route('folders.edit', $folder)" wire:navigate>{{ __('folders.edit') }}</flux:button>
                         <flux:button size="sm" variant="danger" wire:click="delete({{ $folder->id }})" wire:confirm="{{ __('folders.delete_confirm') }}">{{ __('folders.delete') }}</flux:button>
@@ -39,6 +39,7 @@
                 <flux:table.row>
                     <flux:table.cell colspan="4" align="center" class="py-8 text-sm text-zinc-500">
                         {{ __('folders.empty') }}
+                        <flux:link :href="route('folders.create')" wire:navigate class="ms-1">{{ __('folders.create_link') }}</flux:link>
                     </flux:table.cell>
                 </flux:table.row>
             @endforelse

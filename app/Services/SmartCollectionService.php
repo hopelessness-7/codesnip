@@ -8,6 +8,7 @@ use App\Models\Snippet;
 use App\Repositories\Eloquent\SmartCollectionRepository;
 use App\Repositories\Eloquent\SnippetRepository;
 use App\Services\BaseService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,58 @@ class SmartCollectionService extends BaseService
     public function listForUser(int $userId): Collection
     {
         return $this->repository->findByUser($userId);
+    }
+
+    public function paginateForUser(int $userId, int $perPage = 12): LengthAwarePaginator
+    {
+        $paginator = $this->repository->paginateByUser($userId, $perPage);
+
+        $paginator->getCollection()->transform(function (SmartCollection $collection): SmartCollection {
+            $collection->rules_summary = $this->summarizeRules($collection->filters_json ?? []);
+
+            return $collection;
+        });
+
+        return $paginator;
+    }
+
+    public function summarizeRules(array $filters): string
+    {
+        $rules = SmartCollectionRulesData::fromArray($filters);
+        $parts = [];
+
+        if ($rules->language !== null) {
+            $parts[] = __('smart_collections.rule_language', [
+                'language' => __('languages.'.$rules->language->value),
+            ]);
+        }
+
+        if ($rules->is_public === true) {
+            $parts[] = __('smart_collections.rule_visibility_public');
+        } elseif ($rules->is_public === false) {
+            $parts[] = __('smart_collections.rule_visibility_private');
+        }
+
+        if ($rules->tags !== []) {
+            $parts[] = __('smart_collections.rule_tags', [
+                'tags' => implode(', ', $rules->tags),
+                'mode' => $rules->tags_mode === 'any'
+                    ? __('smart_collections.tags_mode_any')
+                    : __('smart_collections.tags_mode_all'),
+            ]);
+        }
+
+        if ($rules->query !== '') {
+            $parts[] = __('smart_collections.rule_query', ['query' => $rules->query]);
+        }
+
+        if ($rules->created_from || $rules->created_to || $rules->updated_from || $rules->updated_to) {
+            $parts[] = __('smart_collections.rule_dates');
+        }
+
+        return $parts === []
+            ? __('smart_collections.rules_none')
+            : implode(' · ', $parts);
     }
 
     public function findForUser(int $userId, int $collectionId): ?SmartCollection

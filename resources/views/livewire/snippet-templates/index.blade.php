@@ -9,7 +9,7 @@
         </flux:button>
     </div>
 
-    <flux:table>
+    <flux:table :paginate="$templates">
         <flux:table.columns>
             <flux:table.column>{{ __('snippet_templates.col_name') }}</flux:table.column>
             <flux:table.column>{{ __('snippet_templates.col_language') }}</flux:table.column>
@@ -40,6 +40,7 @@
                 <flux:table.row>
                     <flux:table.cell colspan="4" align="center" class="py-8 text-sm text-zinc-500">
                         {{ __('snippet_templates.empty') }}
+                        <flux:link :href="route('snippet-templates.create')" wire:navigate class="ms-1">{{ __('snippet_templates.create_link') }}</flux:link>
                     </flux:table.cell>
                 </flux:table.row>
             @endforelse
