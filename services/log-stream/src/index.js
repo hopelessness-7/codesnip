@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 loadEnvFile(path.join(__dirname, '..', '.env'));
 
 const WS_PORT = Number.parseInt(process.env.WS_PORT ?? '8081', 10);
-const WS_TOKEN = process.env.WS_TOKEN ?? 'dev-secret-token';
+const WS_TOKEN = process.env.WS_TOKEN ?? 'dev-secret-change-me';
 
 const watchConfig = resolveWatchConfig();
 
@@ -26,7 +26,9 @@ const server = http.createServer((req, res) => {
         const htmlPath = path.join(__dirname, '..', 'public', 'index.html');
 
         if (fs.existsSync(htmlPath)) {
-            const html = fs.readFileSync(htmlPath, 'utf8');
+            const html = fs
+                .readFileSync(htmlPath, 'utf8')
+                .replace('<!--LOG_STREAM_WS_TOKEN-->', JSON.stringify(WS_TOKEN));
             res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
             res.end(html);
 

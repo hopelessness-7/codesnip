@@ -12,8 +12,11 @@ npm install
 npm run start
 ```
 
-Open **http://localhost:8081/** (same host/port for WebSocket).  
-Optional: `http://localhost:8081/?token=your-token` if you changed `WS_TOKEN`.
+Open **http://localhost:8081/** (same host/port for WebSocket) — token is injected by the Node server for this debug page.
+
+**Dashboard (recommended):** open the app at `http://localhost/dashboard` while logged in. The browser connects to **`ws://localhost/ws/logs`** (no token in the URL). nginx checks Laravel session, then proxies to log-stream with header `X-Log-Stream-Token`.
+
+Direct `:8081` access still accepts `?token=` for debugging.
 
 `npm run dev` — restart on file changes (`node --watch`).
 

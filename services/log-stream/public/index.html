@@ -16,12 +16,20 @@
 <p class="meta" id="status">Connecting…</p>
 <div id="log"></div>
 
+<script>window.__LOG_STREAM_WS_TOKEN__=<!--LOG_STREAM_WS_TOKEN-->;</script>
 <script>
     (function () {
         const logDiv = document.getElementById('log');
         const statusEl = document.getElementById('status');
         const params = new URLSearchParams(window.location.search);
-        const token = params.get('token') || 'dev-secret-token';
+        const serverToken = typeof window.__LOG_STREAM_WS_TOKEN__ === 'string' ? window.__LOG_STREAM_WS_TOKEN__ : '';
+        const token = params.get('token') || serverToken;
+
+        if (!token) {
+            statusEl.textContent = 'Missing token: set LOG_STREAM_WS_TOKEN or open ?token=…';
+            return;
+        }
+
         const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${wsProto}//${window.location.host}/?token=${encodeURIComponent(token)}`;
 
@@ -60,7 +68,11 @@
         };
 
         socket.onclose = function (e) {
-            statusEl.textContent = 'Disconnected (code ' + e.code + ')';
+            if (e.code === 4001) {
+                statusEl.textContent = 'Disconnected: invalid token (code 4001). Check LOG_STREAM_WS_TOKEN matches the server.';
+            } else {
+                statusEl.textContent = 'Disconnected (code ' + e.code + ')';
+            }
         };
 
         socket.onerror = function () {
