@@ -165,10 +165,7 @@ Completed:
 - Editor practical improvements + public preview line actions
 
 Next:
-- Collections and smart collections
-- Import/export flows
-- Templates
-- AI-assisted actions
+- **Import wizard** — import code from local/git into snippet library ([docs/feature-import-wizard.md](docs/feature-import-wizard.md))
 
 ## License
 

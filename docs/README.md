@@ -12,6 +12,7 @@
 | [feature-search.md](feature-search.md) | Поиск, сохранённые запросы, Scout |
 | [feature-folders-collections-templates.md](feature-folders-collections-templates.md) | Папки, smart-коллекции, шаблоны |
 | [feature-import-export.md](feature-import-export.md) | Импорт/экспорт, ZIP, JSON, GitHub Gist |
+| [feature-import-wizard.md](feature-import-wizard.md) | **План:** мастер импорта кода из local/git в библиотеку сниппетов (modal wizard) |
 | [feature-ai-ollama.md](feature-ai-ollama.md) | ИИ, Ollama, теги, настройки пользователя |
 | [configuration.md](configuration.md) | Переменные окружения и конфиги |
 | [infrastructure.md](infrastructure.md) | Сервисы Docker, очереди, Horizon |
