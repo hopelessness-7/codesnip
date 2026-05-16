@@ -113,6 +113,11 @@ export function createBroadcastHub({ wsToken }) {
     const clients = new Set();
 
     function verifyToken(req) {
+        const headerToken = req.headers['x-log-stream-token'];
+        if (typeof headerToken === 'string' && headerToken === wsToken) {
+            return true;
+        }
+
         const host = req.headers.host ? `http://${req.headers.host}` : 'http://localhost';
         const url = new URL(req.url ?? '/', host);
 

@@ -101,5 +101,45 @@
                 </div>
             </div>
         </div>
+
+        @if (config('log_stream.enabled'))
+            <div
+                id="log-stream-panel"
+                class="flex flex-col rounded-lg border border-zinc-200 bg-zinc-950 p-4 dark:border-zinc-700"
+                data-ws-path="{{ config('log_stream.ws_path') }}"
+                data-max-lines="{{ config('log_stream.max_lines') }}"
+            >
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <flux:heading size="md" class="text-zinc-100">{{ __('dashboard.logs_title') }}</flux:heading>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span
+                            data-log-status
+                            class="text-xs text-zinc-400"
+                            data-connecting="{{ __('dashboard.logs_status_connecting') }}"
+                            data-connected="{{ __('dashboard.logs_status_connected') }}"
+                            data-disconnected="{{ __('dashboard.logs_status_disconnected') }}"
+                            data-denied="{{ __('dashboard.logs_status_denied') }}"
+                            data-error="{{ __('dashboard.logs_status_error') }}"
+                        >{{ __('dashboard.logs_status_connecting') }}</span>
+                        <flux:button size="xs" variant="ghost" type="button" data-log-pause data-pause-label="{{ __('dashboard.logs_pause') }}" data-resume-label="{{ __('dashboard.logs_resume') }}">
+                            {{ __('dashboard.logs_pause') }}
+                        </flux:button>
+                        <flux:button size="xs" variant="ghost" type="button" data-log-clear>{{ __('dashboard.logs_clear') }}</flux:button>
+                    </div>
+                </div>
+                <p class="mb-2 text-xs text-amber-600/90 dark:text-amber-400/90">{{ __('dashboard.logs_security_hint') }}</p>
+                <div
+                    data-log-output
+                    class="max-h-72 min-h-[12rem] overflow-y-auto rounded-md border border-zinc-800 bg-black/40 p-2"
+                ></div>
+            </div>
+        @endif
     </div>
+
+@push('scripts')
+    @vite('resources/js/dashboard-log-stream.js')
+@endpush
+
 </x-layouts.app>

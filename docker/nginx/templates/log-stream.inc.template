@@ -1,0 +1,30 @@
+# Generated at container start from LOG_STREAM_WS_TOKEN (see compose.yaml nginx command).
+# Included inside server { } — do not use "map" here (http context only).
+
+# WebSocket log stream — browser → nginx → log-stream (token only on internal hop).
+location /ws/logs {
+    auth_request /internal/log-stream-auth;
+
+    proxy_pass http://log-stream:8081/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Log-Stream-Token "${LOG_STREAM_WS_TOKEN}";
+    proxy_read_timeout 86400;
+    proxy_send_timeout 86400;
+}
+
+# Laravel session check for /ws/logs (internal subrequest only).
+location = /internal/log-stream-auth {
+    internal;
+    include fastcgi_params;
+    fastcgi_pass codesnip-php:9000;
+    fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
+    fastcgi_param REQUEST_URI /internal/log-stream-auth;
+    fastcgi_param REQUEST_METHOD GET;
+    fastcgi_param HTTP_COOKIE $http_cookie;
+}

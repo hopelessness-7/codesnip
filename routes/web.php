@@ -40,6 +40,10 @@ Route::get('dashboard', DashboardController::class)
     ->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/internal/log-stream-auth', function () {
+        return response()->noContent();
+    })->name('internal.log-stream.auth');
+
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
