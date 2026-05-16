@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\SnippetTemplate;
 use App\Repositories\Contracts\SnippetTemplateRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class SnippetTemplateService extends BaseService
@@ -18,6 +19,22 @@ class SnippetTemplateService extends BaseService
     public function listForUser(int $userId): Collection
     {
         return $this->repository->findByUser($userId);
+    }
+
+    public function paginateForUser(int $userId, int $perPage = 12): LengthAwarePaginator
+    {
+        $paginator = $this->repository->paginateByUser($userId, $perPage);
+
+        $paginator->getCollection()->transform(function (SnippetTemplate $template): SnippetTemplate {
+            $template->template_variables = $this->extractVariables(
+                (string) $template->title_template,
+                (string) $template->code_template
+            );
+
+            return $template;
+        });
+
+        return $paginator;
     }
 
     public function findForUser(int $userId, int $templateId): ?SnippetTemplate

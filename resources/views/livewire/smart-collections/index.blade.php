@@ -9,7 +9,7 @@
         </flux:button>
     </div>
 
-    <flux:table>
+    <flux:table :paginate="$collections">
         <flux:table.columns>
             <flux:table.column>{{ __('smart_collections.col_name') }}</flux:table.column>
             <flux:table.column>{{ __('smart_collections.col_rules') }}</flux:table.column>
@@ -20,10 +20,10 @@
             @forelse ($collections as $collection)
                 <flux:table.row :key="$collection->id">
                     <flux:table.cell class="font-medium">{{ $collection->name }}</flux:table.cell>
-                    <flux:table.cell class="text-xs text-zinc-500">
-                        {{ json_encode($collection->filters_json, JSON_UNESCAPED_UNICODE) }}
+                    <flux:table.cell class="max-w-md whitespace-normal text-xs text-zinc-500">
+                        {{ $collection->rules_summary }}
                     </flux:table.cell>
-                    <flux:table.cell>{{ $collection->snippets()->count() }}</flux:table.cell>
+                    <flux:table.cell>{{ $collection->snippets_count }}</flux:table.cell>
                     <flux:table.cell align="end" class="space-x-1">
                         <flux:button
                             size="sm"
@@ -31,7 +31,7 @@
                             :href="route('snippets.index', ['smartCollectionId' => $collection->id])"
                             wire:navigate
                         >
-                            {{ __('tags.index.view_snippets') }}
+                            {{ __('smart_collections.view_snippets') }}
                         </flux:button>
                         <flux:button size="sm" variant="ghost" wire:click="rebuild({{ $collection->id }})">{{ __('smart_collections.rebuild') }}</flux:button>
                         <flux:button size="sm" variant="ghost" :href="route('smart-collections.edit', $collection)" wire:navigate>{{ __('smart_collections.edit') }}</flux:button>
@@ -42,6 +42,7 @@
                 <flux:table.row>
                     <flux:table.cell colspan="4" align="center" class="py-8 text-sm text-zinc-500">
                         {{ __('smart_collections.empty') }}
+                        <flux:link :href="route('smart-collections.create')" wire:navigate class="ms-1">{{ __('smart_collections.create_link') }}</flux:link>
                     </flux:table.cell>
                 </flux:table.row>
             @endforelse

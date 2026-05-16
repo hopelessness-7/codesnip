@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\SmartCollection;
 use App\Repositories\BaseRepository;
 use App\Repositories\Contracts\SmartCollectionRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 readonly class SmartCollectionRepository extends BaseRepository implements SmartCollectionRepositoryInterface
@@ -16,7 +17,16 @@ readonly class SmartCollectionRepository extends BaseRepository implements Smart
 
     public function findByUser(int $userId): Collection
     {
-        return $this->query()->where('user_id', $userId)->get();
+        return $this->query()->where('user_id', $userId)->orderBy('name')->get();
+    }
+
+    public function paginateByUser(int $userId, int $perPage): LengthAwarePaginator
+    {
+        return $this->query()
+            ->where('user_id', $userId)
+            ->withCount('snippets')
+            ->orderBy('name')
+            ->paginate($perPage);
     }
 
     public function findForUser(int $userId, int $collectionId): ?SmartCollection

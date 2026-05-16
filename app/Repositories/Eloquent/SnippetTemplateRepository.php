@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Models\SnippetTemplate;
 use App\Repositories\BaseRepository;
 use App\Repositories\Contracts\SnippetTemplateRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -17,7 +18,12 @@ readonly class SnippetTemplateRepository extends BaseRepository implements Snipp
 
     public function findByUser(int $userId): Collection
     {
-        return $this->baseQueryByUser($userId)->get();
+        return $this->baseQueryByUser($userId)->orderBy('name')->get();
+    }
+
+    public function paginateByUser(int $userId, int $perPage): LengthAwarePaginator
+    {
+        return $this->baseQueryByUser($userId)->orderBy('name')->paginate($perPage);
     }
 
     public function findForUser(int $userId, int $templateId): ?SnippetTemplate

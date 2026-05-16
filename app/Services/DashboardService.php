@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Repositories\Contracts\FolderRepositoryInterface;
 use App\Repositories\Contracts\SmartCollectionRepositoryInterface;
 use App\Repositories\Contracts\SnippetRepositoryInterface;
-use App\Repositories\Contracts\TagRepositoryInterface;
 
 readonly class DashboardService
 {
@@ -13,7 +12,7 @@ readonly class DashboardService
         private SnippetRepositoryInterface $snippets,
         private FolderRepositoryInterface $folders,
         private SmartCollectionRepositoryInterface $smartCollections,
-        private TagRepositoryInterface $tags
+        private TagService $tags
     ) {}
 
     /**
@@ -34,7 +33,7 @@ readonly class DashboardService
                 'snippets_without_folder' => $this->snippets->countWithoutFoldersByUser($userId),
             ],
             'recentSnippets' => $this->snippets->getRecentByUser($userId, 6),
-            'topTags' => $this->tags->forUserSnippets($userId)->take(8)->values(),
+            'topTags' => $this->tags->topForUserSnippets($userId, 8),
         ];
     }
 }

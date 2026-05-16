@@ -6,6 +6,7 @@ use App\DTOs\TagData;
 use App\Models\Tag;
 use App\Repositories\BaseRepository;
 use App\Repositories\Contracts\TagRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -68,11 +69,25 @@ readonly class TagRepository extends BaseRepository implements TagRepositoryInte
 
     public function forUserSnippets(int $userId): Collection
     {
+        return $this->userSnippetsQuery($userId)->get();
+    }
+
+    public function paginateForUserSnippets(int $userId, int $perPage): LengthAwarePaginator
+    {
+        return $this->userSnippetsQuery($userId)->paginate($perPage);
+    }
+
+    public function topForUserSnippets(int $userId, int $limit): Collection
+    {
+        return $this->userSnippetsQuery($userId)->limit($limit)->get();
+    }
+
+    private function userSnippetsQuery(int $userId)
+    {
         return Tag::query()
             ->whereHas('snippets', fn ($q) => $q->where('user_id', $userId))
             ->withCount(['snippets as user_snippets_count' => fn ($q) => $q->where('user_id', $userId)])
             ->orderByDesc('user_snippets_count')
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
     }
 }
